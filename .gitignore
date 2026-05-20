@@ -1,0 +1,13 @@
+node_modules/
+.venv-report-charts/
+dist/
+build/
+.env
+license-private.pem
+*.license.txt
+*.sqlite
+*.db
+backups/
+*.log
+.DS_Store
+Thumbs.db

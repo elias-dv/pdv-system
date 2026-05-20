@@ -1,0 +1,89 @@
+{
+  "name": "pdv-system",
+  "version": "1.0.0",
+  "description": "Sistema PDV completo para pequenos e médios comércios",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --inspect=5858",
+    "assets:icon": "node scripts/generateAppIcon.js",
+    "license:keys": "node scripts/createLicenseKeyPair.js",
+    "license:generate": "node scripts/generateLicense.js",
+    "install:report-charts": "node scripts/installReportCharts.js",
+    "build:report-bin": "node scripts/buildReportBinary.js",
+    "postinstall": "electron-rebuild -f -w better-sqlite3",
+    "prebuild": "npm run build:report-bin",
+    "build": "electron-builder",
+    "prebuild:win": "npm run build:report-bin",
+    "build:win": "electron-builder --win",
+    "prebuild:mac": "npm run build:report-bin",
+    "build:mac": "electron-builder --mac",
+    "prebuild:linux": "npm run build:report-bin",
+    "build:linux": "electron-builder --linux"
+  },
+  "keywords": ["pdv", "ponto-de-venda", "electron", "sqlite"],
+  "author": "PDV System",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
+    "nodemailer": "^6.9.13"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "@electron/rebuild": "^3.6.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.pdvsystem.app",
+    "productName": "PDV Sistema",
+    "copyright": "Copyright © 2024",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "assets/*.png",
+      "src/**/*",
+      "node_modules/**/*",
+      "requirements.txt",
+      ".env"
+    ],
+    "asarUnpack": [
+      "src/services/reportWorkbookBuilder.py"
+    ],
+    "extraResources": [
+      {
+        "from": "build/report-workbook-builder",
+        "to": "report-workbook-builder",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }],
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.business"
+    },
+    "linux": {
+      "target": [{ "target": "AppImage", "arch": ["x64"] }],
+      "icon": "assets/icon.png",
+      "category": "Office"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "assets/icon.ico",
+      "installerLanguages": ["pt_BR"]
+    }
+  }
+}
