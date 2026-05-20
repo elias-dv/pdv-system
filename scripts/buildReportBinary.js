@@ -11,6 +11,9 @@ const scriptPath = path.join(rootDir, 'src', 'services', 'reportWorkbookBuilder.
 const requestedArch = process.platform === 'darwin'
   ? (process.env.PDV_REPORT_BUILDER_ARCH || process.arch)
   : process.arch;
+const pyInstallerTargetArch = process.platform === 'darwin' && requestedArch === 'x64'
+  ? 'x86_64'
+  : requestedArch;
 const outputKey = requestedArch === 'universal2'
   ? process.platform
   : `${process.platform}-${requestedArch}`;
@@ -110,8 +113,8 @@ function buildBinary(venvPython) {
     '--collect-all', 'xlsxwriter',
   ];
 
-  if (process.platform === 'darwin' && requestedArch) {
-    args.push('--target-architecture', requestedArch);
+  if (process.platform === 'darwin' && pyInstallerTargetArch) {
+    args.push('--target-architecture', pyInstallerTargetArch);
   }
 
   args.push(scriptPath);
