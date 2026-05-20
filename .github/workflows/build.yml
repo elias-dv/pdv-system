@@ -1,0 +1,68 @@
+name: Build Apps
+
+on:
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build:
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: mac-arm64
+            os: macos-latest
+            command: npm run build:mac -- --arm64 --publish never
+
+          - name: mac-x64
+            os: macos-15-intel
+            command: npm run build:mac -- --x64 --publish never
+
+          - name: windows-x64
+            os: windows-2025
+            command: npm run build:win -- --publish never
+
+          - name: linux-x64
+            os: ubuntu-24.04
+            command: npm run build:linux -- --publish never
+
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Dependencias Linux
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libarchive-tools
+
+      - name: Instalar dependencias
+        run: npm install --foreground-scripts
+
+      - name: Build
+        run: ${{ matrix.command }}
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Enviar instaladores
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdv-${{ matrix.name }}
+          path: |
+            dist/**
+            !dist/**/*.blockmap
