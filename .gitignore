@@ -2,7 +2,6 @@ node_modules/
 .venv-report-charts/
 dist/
 build/
-.env
 license-private.pem
 *.license.txt
 *.sqlite
