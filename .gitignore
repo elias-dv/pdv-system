@@ -1,6 +1,7 @@
 node_modules/
 .venv-report-charts/
 dist/
+.env.example
 build/
 license-private.pem
 *.license.txt
